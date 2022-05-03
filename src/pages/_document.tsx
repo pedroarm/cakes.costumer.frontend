@@ -1,6 +1,5 @@
 import React from 'react'
 import Document, {
-  DocumentInitialProps,
   DocumentContext,
   Html,
   Head,
@@ -9,38 +8,27 @@ import Document, {
 } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
 
-export default class MyDocument extends Document {
-  static async getInitialProps(
-    ctx: DocumentContext
-  ): Promise<DocumentInitialProps> {
+interface Props {
+  styleTags: any
+}
+
+export default class MyDocument extends Document<Props> {
+  static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet()
-    const originalRenderPage = ctx.renderPage
+    const styleTags = sheet.getStyleElement()
+    const page = ctx.renderPage(
+      (App: any) => (props: any) => sheet.collectStyles(<App {...props} />)
+    )
 
-    try {
-      ctx.renderPage = () =>
-        originalRenderPage({
-          enhanceApp: App => props => sheet.collectStyles(<App {...props} />)
-        })
-
-      const initialProps = await Document.getInitialProps(ctx)
-      return {
-        ...initialProps,
-        styles: (
-          <>
-            {initialProps.styles}
-            {sheet.getStyleElement()}
-          </>
-        )
-      }
-    } finally {
-      sheet.seal()
-    }
+    const initialProps = await Document.getInitialProps(ctx)
+    return { ...initialProps, ...page, styleTags }
   }
 
   render(): JSX.Element {
     return (
       <Html lang="pt">
         <Head>
+          {this.props.styleTags}
           <meta charSet="utf-8" />
 
           <link
