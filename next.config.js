@@ -1,5 +1,12 @@
+/** @type {import('next').NextConfig} */
 const withImages = require('next-images')
 
-module.exports = withImages({
-  esModule: true,
-})
+module.exports = {
+  reactStrictMode: true,
+  compiler: {
+    styledComponents: true,
+  },
+  withImages: withImages({
+    esModule: true,
+  })
+}

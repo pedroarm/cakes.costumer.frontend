@@ -6,29 +6,18 @@ import Document, {
   Main,
   NextScript
 } from 'next/document'
-import { ServerStyleSheet } from 'styled-components'
 
-interface Props {
-  styleTags: any
-}
-
-export default class MyDocument extends Document<Props> {
+export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
-    const sheet = new ServerStyleSheet()
-    const styleTags = sheet.getStyleElement()
-    const page = ctx.renderPage(
-      (App: any) => (props: any) => sheet.collectStyles(<App {...props} />)
-    )
-
     const initialProps = await Document.getInitialProps(ctx)
-    return { ...initialProps, ...page, styleTags }
+
+    return initialProps
   }
 
   render(): JSX.Element {
     return (
       <Html lang="pt">
         <Head>
-          {this.props.styleTags}
           <meta charSet="utf-8" />
 
           <link
